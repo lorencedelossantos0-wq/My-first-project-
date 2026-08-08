@@ -1,53 +1,225 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <title>Login UI</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login</title>
+
   <style>
-    .error-input { border: 2px solid red; }
-    .success { color: green; }
-    .error { color: red; }
+    :root{
+      --gap: .75rem;
+      --accent: #0366d6;
+      --error: #c62828;
+      --success: #2e7d32;
+      --bg: #f7f9fb;
+      --card: #fff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      padding:2rem;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background:linear-gradient(180deg,#eef3fb, #f7f9fb);
+      color:#111;
+      display:flex;
+      min-height:100vh;
+      align-items:center;
+      justify-content:center;
+    }
+    .card{
+      background:var(--card);
+      padding:1.25rem 1.5rem;
+      border-radius:10px;
+      box-shadow:0 6px 20px rgba(20,30,50,0.08);
+      width:100%;
+      max-width:420px;
+    }
+    h1{margin:0 0 var(--gap) 0;font-size:1.25rem}
+    form{display:grid;gap:var(--gap)}
+    label{display:block;font-size:.9rem}
+    input[type="text"],
+    input[type="password"]{
+      width:100%;
+      padding:.6rem .75rem;
+      margin-top:.25rem;
+      border:1px solid #cfd8e3;
+      border-radius:6px;
+      font-size:1rem;
+    }
+    input:focus{outline:2px solid rgba(3,102,214,.18); border-color:var(--accent)}
+    .row{display:flex;gap:.5rem;align-items:center}
+    .error-input{border-color:var(--error)!important; box-shadow:0 0 0 3px rgba(198,40,40,.06)}
+    .help{font-size:.85rem;color:#555}
+    .actions{display:flex;gap:.5rem;align-items:center}
+    button{
+      background:var(--accent);
+      color:white;
+      border:none;
+      padding:.6rem .9rem;
+      border-radius:6px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    button[aria-pressed="true"]{outline:2px solid rgba(0,0,0,.05)}
+    .secondary{background:#e6eefb;color:var(--accent);font-weight:600}
+    #message{min-height:1.25rem;margin-top:.25rem;font-size:.95rem}
+    .success{color:var(--success)}
+    .error{color:var(--error)}
+    .visually-hidden{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap;border:0;padding:0;margin:-1px}
+    small.info{display:block;margin-top:.25rem;color:#666;font-size:.85rem}
   </style>
 </head>
 <body>
-  <form id="loginForm">
-    <label>Username: <input type="text" id="username" /></label><br>
-    <label>Password: <input type="password" id="password" /></label><br>
-    <button type="submit">Log In</button>
-  </form>
-  <div id="message"></div>
+  <main class="card" aria-labelledby="title">
+    <h1 id="title">Sign in</h1>
+
+    <!-- In production you MUST send credentials to a server over HTTPS.
+         Never rely on client-side checks for real authentication. -->
+    <form id="loginForm" novalidate>
+      <div>
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required
+               pattern="^[A-Za-z0-9._-]{3,}$"
+               title="Use at least 3 characters: letters, numbers, dot, underscore or dash">
+        <small class="help" aria-hidden="true">At least 3 characters.</small>
+      </div>
+
+      <div>
+        <label for="password">Password</label>
+        <div class="row">
+          <input id="password" name="password" type="password" autocomplete="current-password" required minlength="4">
+          <button type="button" id="togglePassword" aria-pressed="false" class="secondary" aria-label="Show password">Show</button>
+        </div>
+        <small class="help" aria-hidden="true">Use your account password. (Demo accepts "admin" / "1234" only if demo mode is enabled.)</small>
+      </div>
+
+      <div class="actions">
+        <button type="submit">Sign in</button>
+        <button type="button" id="clearBtn" class="secondary">Clear</button>
+      </div>
+
+      <div id="message" role="status" aria-live="polite"></div>
+    </form>
+
+    <p class="info">This page is a demo. Move logic to a secure server and use HTTPS + rate limiting for real logins.</p>
+  </main>
 
   <script>
-    function validateLogin(username, password) {
-      return username === "admin" && password === "1234";
-    }
+    (function () {
+      // Toggle this flag only for local demos. Remove it in production.
+      const DEMO_MODE = true;
 
-    function handleLogin(e) {
-      e.preventDefault();
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-      const msg = document.getElementById('message');
+      const form = document.getElementById('loginForm');
+      const username = document.getElementById('username');
+      const password = document.getElementById('password');
+      const message = document.getElementById('message');
+      const clearBtn = document.getElementById('clearBtn');
+      const togglePassword = document.getElementById('togglePassword');
 
-      if (validateLogin(username, password)) {
-        msg.innerHTML = '<span class="success">✅ Login successful!</span>';
-      } else {
-        msg.innerHTML = '<span class="error">❌ Invalid credentials.</span>';
-        
-        document.getElementById('username').classList.add('error-input');
-        document.getElementById('password').classList.add('error-input');
+      // Small helpers
+      function setMessage(text, type) {
+        message.textContent = text;
+        message.className = type === 'success' ? 'success' : (type === 'error' ? 'error' : '');
       }
-    }
+      function clearMessage() { message.textContent = ''; message.className = ''; }
 
-    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+      function showFieldError(field, msg) {
+        field.classList.add('error-input');
+        field.setAttribute('aria-invalid', 'true');
+        setMessage(msg, 'error');
+      }
+      function clearFieldError(field) {
+        field.classList.remove('error-input');
+        field.removeAttribute('aria-invalid');
+        clearMessage();
+      }
 
+      // remove errors as user edits
+      [username, password].forEach(input => {
+        input.addEventListener('input', () => {
+          clearFieldError(input);
+        });
+      });
 
-    window.setUsername = (val) => document.getElementById('username').value = val;
-    window.setPassword = (val) => document.getElementById('password').value = val;
-    window.clearForm = () => {
-      document.getElementById('username').value = '';
-      document.getElementById('password').value = '';
-      document.getElementById('message').innerHTML = '';
-    };
+      togglePassword.addEventListener('click', () => {
+        const shown = password.type === 'text';
+        password.type = shown ? 'password' : 'text';
+        togglePassword.textContent = shown ? 'Show' : 'Hide';
+        togglePassword.setAttribute('aria-pressed', String(!shown));
+      });
+
+      clearBtn.addEventListener('click', () => {
+        form.reset();
+        clearMessage();
+        [username, password].forEach(f => clearFieldError(f));
+        username.focus();
+      });
+
+      // Demo-only client validation function (remove in production)
+      function validateDemoCredentials(user, pass) {
+        // Demo credentials (only for local demonstration). Do NOT ship these.
+        return user === 'admin' && pass === '1234';
+      }
+
+      form.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        clearMessage();
+
+        // native validation first
+        if (!form.checkValidity()) {
+          // find first invalid control
+          const firstInvalid = form.querySelector(':invalid');
+          firstInvalid.reportValidity();
+          showFieldError(firstInvalid, 'Please fix this field.');
+          firstInvalid.focus();
+          return;
+        }
+
+        const payload = {
+          username: username.value.trim(),
+          password: password.value
+        };
+
+        // Preferred: send to server over HTTPS
+        try {
+          if (!DEMO_MODE) {
+            // Example: use fetch to POST to your login endpoint
+            const res = await fetch('/api/login', {
+              method: 'POST',
+              headers: { 'Content-Type':'application/json' },
+              body: JSON.stringify(payload),
+              credentials: 'include'
+            });
+            if (!res.ok) {
+              const err = await res.json().catch(() => ({}));
+              throw new Error(err.message || 'Login failed');
+            }
+            setMessage('✅ Login successful', 'success');
+            // Redirect or update UI after successful auth:
+            // window.location.href = '/dashboard';
+            return;
+          }
+
+          // DEMO fallback
+          if (validateDemoCredentials(payload.username, payload.password)) {
+            setMessage('✅ Login successful (demo)', 'success');
+          } else {
+            showFieldError(username, 'Invalid credentials.');
+            password.classList.add('error-input');
+          }
+        } catch (err) {
+          console.error(err);
+          setMessage('An error occurred. Try again later.', 'error');
+        }
+      });
+
+      // Export small helpers for automated tests if needed (kept minimal)
+      window.demoHelpers = {
+        clearForm: () => clearBtn.click(),
+        setUsername: (v) => { username.value = v; username.dispatchEvent(new Event('input')); },
+        setPassword: (v) => { password.value = v; password.dispatchEvent(new Event('input')); }
+      };
+    })();
   </script>
 </body>
 </html>
