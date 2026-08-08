@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login UI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    .error-input { border: 2px solid red; }
+    .success { color: green; }
+    .error { color: red; }
+  </style>
+</head>
+<body>
+  <form id="loginForm">
+    <label>Username: <input type="text" id="username" /></label><br>
+    <label>Password: <input type="password" id="password" /></label><br>
+    <button type="submit">Log In</button>
+  </form>
+  <div id="message"></div>
+
+  <script>
+    function validateLogin(username, password) {
+      return username === "admin" && password === "1234";
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const msg = document.getElementById('message');
+
+      if (validateLogin(username, password)) {
+        msg.innerHTML = '<span class="success">✅ Login successful!</span>';
+      } else {
+        msg.innerHTML = '<span class="error">❌ Invalid credentials.</span>';
+        
+        document.getElementById('username').classList.add('error-input');
+        document.getElementById('password').classList.add('error-input');
+      }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', handleLogin);
+
+
+    window.setUsername = (val) => document.getElementById('username').value = val;
+    window.setPassword = (val) => document.getElementById('password').value = val;
+    window.clearForm = () => {
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('message').innerHTML = '';
+    };
+  </script>
+</body>
+</html>
