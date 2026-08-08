@@ -73,8 +73,6 @@
   <main class="card" aria-labelledby="title">
     <h1 id="title">Sign in</h1>
 
-    <!-- In production you MUST send credentials to a server over HTTPS.
-         Never rely on client-side checks for real authentication. -->
     <form id="loginForm" novalidate>
       <div>
         <label for="username">Username</label>
@@ -90,7 +88,7 @@
           <input id="password" name="password" type="password" autocomplete="current-password" required minlength="4">
           <button type="button" id="togglePassword" aria-pressed="false" class="secondary" aria-label="Show password">Show</button>
         </div>
-        <small class="help" aria-hidden="true">Use your account password. (Demo accepts "admin" / "1234" only if demo mode is enabled.)</small>
+        <small class="help" aria-hidden="true">Use your account password.</small>
       </div>
 
       <div class="actions">
@@ -101,12 +99,11 @@
       <div id="message" role="status" aria-live="polite"></div>
     </form>
 
-    <p class="info">This page is a demo. Move logic to a secure server and use HTTPS + rate limiting for real logins.</p>
+    <p class="info">This page is a demo.</p>
   </main>
 
   <script>
     (function () {
-      // Toggle this flag only for local demos. Remove it in production.
       const DEMO_MODE = true;
 
       const form = document.getElementById('loginForm');
@@ -116,7 +113,6 @@
       const clearBtn = document.getElementById('clearBtn');
       const togglePassword = document.getElementById('togglePassword');
 
-      // Small helpers
       function setMessage(text, type) {
         message.textContent = text;
         message.className = type === 'success' ? 'success' : (type === 'error' ? 'error' : '');
@@ -134,7 +130,6 @@
         clearMessage();
       }
 
-      // remove errors as user edits
       [username, password].forEach(input => {
         input.addEventListener('input', () => {
           clearFieldError(input);
@@ -155,9 +150,7 @@
         username.focus();
       });
 
-      // Demo-only client validation function (remove in production)
       function validateDemoCredentials(user, pass) {
-        // Demo credentials (only for local demonstration). Do NOT ship these.
         return user === 'admin' && pass === '1234';
       }
 
@@ -165,9 +158,7 @@
         ev.preventDefault();
         clearMessage();
 
-        // native validation first
         if (!form.checkValidity()) {
-          // find first invalid control
           const firstInvalid = form.querySelector(':invalid');
           firstInvalid.reportValidity();
           showFieldError(firstInvalid, 'Please fix this field.');
@@ -179,11 +170,8 @@
           username: username.value.trim(),
           password: password.value
         };
-
-        // Preferred: send to server over HTTPS
         try {
           if (!DEMO_MODE) {
-            // Example: use fetch to POST to your login endpoint
             const res = await fetch('/api/login', {
               method: 'POST',
               headers: { 'Content-Type':'application/json' },
@@ -195,8 +183,6 @@
               throw new Error(err.message || 'Login failed');
             }
             setMessage('✅ Login successful', 'success');
-            // Redirect or update UI after successful auth:
-            // window.location.href = '/dashboard';
             return;
           }
 
