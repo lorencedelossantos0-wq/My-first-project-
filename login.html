@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sign in</title>
+<style>
+  :root{
+    --ink: #12181f;
+    --paper: #f4f2ee;
+    --panel: #ffffff;
+    --line: #e2ded6;
+    --accent: #b8712f;
+    --accent-ink: #ffffff;
+    --error: #b3261e;
+    --success: #2e6b3e;
+    --radius: 10px;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    font-family: "Iowan Old Style","Palatino Linotype",Georgia,serif;
+    background: var(--paper);
+    color: var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 2rem 1.25rem;
+  }
+
+  .panel{
+    width:100%;
+    max-width: 380px;
+  }
+
+  .mark{
+    display:flex;
+    align-items:center;
+    gap:.6rem;
+    margin-bottom: 1.75rem;
+  }
+  .mark svg{ flex:none; }
+  .mark span{
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.72rem;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:#6b6255;
+  }
+
+  h1{
+    font-size: 1.6rem;
+    font-weight: 500;
+    margin: 0 0 .35rem;
+    letter-spacing: -.01em;
+  }
+  .sub{
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: .88rem;
+    color:#655c4e;
+    margin: 0 0 1.75rem;
+  }
+
+  form{ display:grid; gap:1.1rem; }
+
+  .field{ position:relative; }
+  label{
+    display:block;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.72rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#6b6255;
+    margin-bottom:.4rem;
+  }
+  input{
+    width:100%;
+    padding: .7rem .8rem;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: .98rem;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  input::placeholder{ color:#b3ab9c; }
+  input:focus{
+    outline:none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(184,113,47,.15);
+  }
+  input[aria-invalid="true"]{
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(179,38,30,.1);
+  }
+
+  .password-wrap{ position:relative; }
+  .password-wrap input{ padding-right: 3.2rem; }
+  .toggle-visibility{
+    position:absolute;
+    right:.4rem;
+    top:50%;
+    transform: translateY(-50%);
+    border:none;
+    background:none;
+    color:#6b6255;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.75rem;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    cursor:pointer;
+    padding:.4rem .5rem;
+    border-radius:6px;
+  }
+  .toggle-visibility:hover{ color: var(--ink); }
+  .toggle-visibility:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+
+  .field-error{
+    display:none;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.78rem;
+    color: var(--error);
+    margin-top:.35rem;
+  }
+  .field-error.show{ display:block; }
+
+  button[type="submit"]{
+    margin-top:.25rem;
+    width:100%;
+    padding: .75rem 1rem;
+    background: var(--ink);
+    color: var(--accent-ink);
+    border:none;
+    border-radius: var(--radius);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.92rem;
+    font-weight:600;
+    letter-spacing:.01em;
+    cursor:pointer;
+    transition: background .15s ease, transform .05s ease;
+  }
+  button[type="submit"]:hover{ background:#242e38; }
+  button[type="submit"]:active{ transform: translateY(1px); }
+  button[type="submit"]:disabled{ opacity:.6; cursor:progress; }
+  button:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  #message{
+    min-height:1.2rem;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.85rem;
+    text-align:center;
+  }
+  #message.success{ color: var(--success); }
+  #message.error{ color: var(--error); }
+
+  .footnote{
+    margin-top:1.5rem;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.78rem;
+    color:#8c8373;
+    text-align:center;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="panel">
+    <div class="mark">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="4" y="10" width="16" height="10" rx="2" stroke="#b8712f" stroke-width="1.6"/>
+        <path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3" stroke="#b8712f" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <span>Meridian</span>
+    </div>
+
+    <h1>Welcome back</h1>
+    <p class="sub">Sign in to continue to your account.</p>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="username">Username</label>
+        <input
+          id="username" name="username" type="text"
+          autocomplete="username" placeholder="jane.doe"
+          required pattern="^[A-Za-z0-9._-]{3,}$"
+        />
+        <p class="field-error" id="usernameError">Enter at least 3 characters (letters, numbers, . _ -).</p>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="password-wrap">
+          <input
+            id="password" name="password" type="password"
+            autocomplete="current-password" placeholder="••••••••"
+            required minlength="4"
+          />
+          <button type="button" id="togglePassword" aria-pressed="false" aria-controls="password">Show</button>
+        </div>
+        <p class="field-error" id="passwordError">Password must be at least 4 characters.</p>
+      </div>
+
+      <button type="submit" id="submitBtn">Sign in</button>
+      <div id="message" role="status" aria-live="polite"></div>
+    </form>
+
+    <p class="footnote">Demo only — try <strong>admin</strong> / <strong>1234</strong>.</p>
+  </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById('loginForm');
+      const username = document.getElementById('username');
+      const password = document.getElementById('password');
+      const usernameError = document.getElementById('usernameError');
+      const passwordError = document.getElementById('passwordError');
+      const message = document.getElementById('message');
+      const submitBtn = document.getElementById('submitBtn');
+      const togglePassword = document.getElementById('togglePassword');
+
+      const errorEls = { username: usernameError, password: passwordError };
+
+      function setMessage(text, type) {
+        message.textContent = text;
+        message.className = type || '';
+      }
+
+      function setFieldError(input, hasError) {
+        input.setAttribute('aria-invalid', String(hasError));
+        errorEls[input.name].classList.toggle('show', hasError);
+      }
+
+      [username, password].forEach((input) => {
+        input.addEventListener('input', () => {
+          setFieldError(input, false);
+          setMessage('', '');
+        });
+      });
+
+      togglePassword.addEventListener('click', () => {
+        const isText = password.type === 'text';
+        password.type = isText ? 'password' : 'text';
+        togglePassword.textContent = isText ? 'Show' : 'Hide';
+        togglePassword.setAttribute('aria-pressed', String(!isText));
+      });
+
+      function validateDemoCredentials(user, pass) {
+        return user === 'admin' && pass === '1234';
+      }
+
+      form.addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        setMessage('', '');
+
+        if (!form.checkValidity()) {
+          [username, password].forEach((input) => setFieldError(input, !input.checkValidity()));
+          form.querySelector(':invalid').focus();
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing in…';
+
+        // Simulated network delay for a realistic demo.
+        setTimeout(() => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign in';
+
+          if (validateDemoCredentials(username.value.trim(), password.value)) {
+            setMessage('Signed in successfully.', 'success');
+          } else {
+            setFieldError(username, true);
+            setFieldError(password, true);
+            setMessage('Incorrect username or password.', 'error');
+          }
+        }, 500);
+      });
+    })();
+  </script>
+</body>
+</html>
