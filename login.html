@@ -34,21 +34,6 @@
     max-width: 380px;
   }
 
-  .mark{
-    display:flex;
-    align-items:center;
-    gap:.6rem;
-    margin-bottom: 1.75rem;
-  }
-  .mark svg{ flex:none; }
-  .mark span{
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    font-size:.72rem;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    color:#6b6255;
-  }
-
   h1{
     font-size: 1.6rem;
     font-weight: 500;
@@ -126,6 +111,19 @@
   }
   .field-error.show{ display:block; }
 
+  .row-between{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.82rem;
+  }
+  .row-between a{
+    color: var(--accent);
+    text-decoration:none;
+  }
+  .row-between a:hover{ text-decoration:underline; }
+
   button[type="submit"]{
     margin-top:.25rem;
     width:100%;
@@ -162,6 +160,11 @@
     color:#8c8373;
     text-align:center;
   }
+  .footnote a{
+    color: var(--accent);
+    text-decoration:none;
+  }
+  .footnote a:hover{ text-decoration:underline; }
 
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; }
@@ -170,14 +173,6 @@
 </head>
 <body>
   <div class="panel">
-    <div class="mark">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <rect x="4" y="10" width="16" height="10" rx="2" stroke="#b8712f" stroke-width="1.6"/>
-        <path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3" stroke="#b8712f" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
-      <span> </span>
-    </div>
-
     <h1>Welcome back</h1>
     <p class="sub">Sign in to continue to your account.</p>
 
@@ -205,16 +200,17 @@
         <p class="field-error" id="passwordError">Password must be at least 4 characters.</p>
       </div>
 
-      <button type="submit" id="submitBtn">Sign in</button>
+      <div class="row-between">
+        <a href="/reset-password" id="forgotLink">Forgot password?</a>
+      </div>
+
+      <button type="submit" id="submitBtn">Log In</button>
       <div id="message" role="status" aria-live="polite"></div>
     </form>
 
-  <a href="/reset-password" id="forgotLink">Forgot password?</a>
-</form>
-
-    <p id="signupWrapper">
-    Don't have an account? <a href="/signup" id="signupLink">Create one</a>
-  </p>
+    <p class="footnote" id="signupWrapper">
+      Don't have an account? <a href="/signup" id="signupLink">Create one</a>
+    </p>
   </div>
 
   <script>
@@ -274,7 +270,7 @@
         // Simulated network delay for a realistic demo.
         setTimeout(() => {
           submitBtn.disabled = false;
-          submitBtn.textContent = 'Sign in';
+          submitBtn.textContent = 'Log In';
 
           if (validateDemoCredentials(username.value.trim(), password.value)) {
             setMessage('Signed in successfully.', 'success');
