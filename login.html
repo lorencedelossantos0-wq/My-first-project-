@@ -175,7 +175,7 @@
         <rect x="4" y="10" width="16" height="10" rx="2" stroke="#b8712f" stroke-width="1.6"/>
         <path d="M7.5 10V7a4.5 4.5 0 0 1 9 0v3" stroke="#b8712f" stroke-width="1.6" stroke-linecap="round"/>
       </svg>
-      <span>Meridian</span>
+      <span> </span>
     </div>
 
     <h1>Welcome back</h1>
@@ -186,7 +186,7 @@
         <label for="username">Username</label>
         <input
           id="username" name="username" type="text"
-          autocomplete="username" placeholder="jane.doe"
+          autocomplete="username" placeholder=" "
           required pattern="^[A-Za-z0-9._-]{3,}$"
         />
         <p class="field-error" id="usernameError">Enter at least 3 characters (letters, numbers, . _ -).</p>
@@ -197,7 +197,7 @@
         <div class="password-wrap">
           <input
             id="password" name="password" type="password"
-            autocomplete="current-password" placeholder="••••••••"
+            autocomplete="current-password" placeholder=" "
             required minlength="4"
           />
           <button type="button" id="togglePassword" aria-pressed="false" aria-controls="password">Show</button>
@@ -209,7 +209,14 @@
       <div id="message" role="status" aria-live="polite"></div>
     </form>
 
-    <p class="footnote">Demo only — try <strong>admin</strong> / <strong>1234</strong>.</p>
+  <a href="/reset-password" id="forgotLink">Forgot password?</a>
+
+  <button type="submit">Log In</button>
+</form>
+
+    <p id="signupWrapper">
+    Don't have an account? <a href="/signup" id="signupLink">Create one</a>
+  </p>
   </div>
 
   <script>
