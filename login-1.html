@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sign in</title>
+<style>
+  :root{
+    --ink: #12181f;
+    --paper: #f4f2ee;
+    --panel: #ffffff;
+    --line: #e2ded6;
+    --accent: #b8712f;
+    --accent-ink: #ffffff;
+    --error: #b3261e;
+    --success: #2e6b3e;
+    --radius: 10px;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    font-family: "Iowan Old Style","Palatino Linotype",Georgia,serif;
+    background: var(--paper);
+    color: var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 2rem 1.25rem;
+  }
+
+  .panel{
+    width:100%;
+    max-width: 380px;
+  }
+
+  h1{
+    font-size: 1.6rem;
+    font-weight: 500;
+    margin: 0 0 .35rem;
+    letter-spacing: -.01em;
+  }
+  .sub{
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: .88rem;
+    color:#655c4e;
+    margin: 0 0 1.75rem;
+  }
+
+  form{ display:grid; gap:1.1rem; }
+
+  .field{ position:relative; }
+  label{
+    display:block;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.72rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:#6b6255;
+    margin-bottom:.4rem;
+  }
+  input{
+    width:100%;
+    padding: .7rem .8rem;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: .98rem;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  input::placeholder{ color:#b3ab9c; }
+  input:focus{
+    outline:none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(184,113,47,.15);
+  }
+  input[aria-invalid="true"]{
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(179,38,30,.1);
+  }
+
+  .password-wrap{ position:relative; }
+  .password-wrap input{ padding-right: 3.2rem; }
+  .toggle-visibility{
+    position:absolute;
+    right:.4rem;
+    top:50%;
+    transform: translateY(-50%);
+    border:none;
+    background:none;
+    color:#6b6255;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.75rem;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    cursor:pointer;
+    padding:.4rem .5rem;
+    border-radius:6px;
+  }
+  .toggle-visibility:hover{ color: var(--ink); }
+  .toggle-visibility:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+
+  .field-error{
+    display:none;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.78rem;
+    color: var(--error);
+    margin-top:.35rem;
+  }
+  .field-error.show{ display:block; }
+
+  .row-between{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.82rem;
+  }
+  .row-between a{
+    color: var(--accent);
+    text-decoration:none;
+  }
+  .row-between a:hover{ text-decoration:underline; }
+
+  button[type="submit"]{
+    margin-top:.25rem;
+    width:100%;
+    padding: .75rem 1rem;
+    background: var(--ink);
+    color: var(--accent-ink);
+    border:none;
+    border-radius: var(--radius);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.92rem;
+    font-weight:600;
+    letter-spacing:.01em;
+    cursor:pointer;
+    transition: background .15s ease, transform .05s ease;
+  }
+  button[type="submit"]:hover{ background:#242e38; }
+  button[type="submit"]:active{ transform: translateY(1px); }
+  button[type="submit"]:disabled{ opacity:.6; cursor:progress; }
+  button:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  #message{
+    min-height:1.2rem;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.85rem;
+    text-align:center;
+  }
+  #message.success{ color: var(--success); }
+  #message.error{ color: var(--error); }
+
+  .footnote{
+    margin-top:1.5rem;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.78rem;
+    color:#8c8373;
+    text-align:center;
+  }
+  .footnote a{
+    color: var(--accent);
+    text-decoration:none;
+  }
+  .footnote a:hover{ text-decoration:underline; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="panel">
+    <h1>Welcome back</h1>
+    <p class="sub">Sign in to continue to your account.</p>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          id="email" name="email" type="email"
+          autocomplete="email" placeholder="jane@example.com"
+          required
+        />
+        <p class="field-error" id="emailError">Enter a valid email address.</p>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div class="password-wrap">
+          <input
+            id="password" name="password" type="password"
+            autocomplete="current-password" placeholder="••••••••"
+            required minlength="6"
+          />
+          <button type="button" id="togglePassword" aria-pressed="false" aria-controls="password">Show</button>
+        </div>
+        <p class="field-error" id="passwordError">Password must be at least 6 characters.</p>
+      </div>
+
+      <div class="row-between">
+        <a href="/reset-password" id="forgotLink">Forgot password?</a>
+      </div>
+
+      <button type="submit" id="submitBtn">Log In</button>
+      <div id="message" role="status" aria-live="polite"></div>
+    </form>
+
+    <p class="footnote" id="signupWrapper">
+      Don't have an account? <a href="/signup" id="signupLink">Create one</a>
+    </p>
+  </div>
+
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    (function () {
+      // ---- Supabase setup ----
+      const SUPABASE_URL = 'https://xbmdfuruwtavesdpjols.supabase.co';
+      const SUPABASE_KEY = 'sb_publishable_Wtl4SqxUwrhS62k1LaVzDA_h2KM8WvU';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      // ---- Form elements ----
+      const form = document.getElementById('loginForm');
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const emailError = document.getElementById('emailError');
+      const passwordError = document.getElementById('passwordError');
+      const message = document.getElementById('message');
+      const submitBtn = document.getElementById('submitBtn');
+      const togglePassword = document.getElementById('togglePassword');
+
+      const errorEls = { email: emailError, password: passwordError };
+
+      function setMessage(text, type) {
+        message.textContent = text;
+        message.className = type || '';
+      }
+
+      function setFieldError(input, hasError) {
+        input.setAttribute('aria-invalid', String(hasError));
+        errorEls[input.name].classList.toggle('show', hasError);
+      }
+
+      [email, password].forEach((input) => {
+        input.addEventListener('input', () => {
+          setFieldError(input, false);
+          setMessage('', '');
+        });
+      });
+
+      togglePassword.addEventListener('click', () => {
+        const isText = password.type === 'text';
+        password.type = isText ? 'password' : 'text';
+        togglePassword.textContent = isText ? 'Show' : 'Hide';
+        togglePassword.setAttribute('aria-pressed', String(!isText));
+      });
+
+      form.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        setMessage('', '');
+
+        if (!form.checkValidity()) {
+          [email, password].forEach((input) => setFieldError(input, !input.checkValidity()));
+          form.querySelector(':invalid').focus();
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing in…';
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: email.value.trim(),
+          password: password.value,
+        });
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Log In';
+
+        if (error) {
+          setFieldError(email, true);
+          setFieldError(password, true);
+          setMessage(error.message, 'error');
+          return;
+        }
+
+        setMessage('Signed in successfully.', 'success');
+        // data.session and data.user are now available.
+        // e.g. redirect: window.location.href = '/dashboard';
+      });
+    })();
+  </script>
+</body>
+</html>
