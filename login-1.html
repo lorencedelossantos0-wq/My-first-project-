@@ -48,6 +48,7 @@
   }
 
   form{ display:grid; gap:1.1rem; }
+  form[hidden]{ display:none; }
 
   .field{ position:relative; }
   label{
@@ -111,6 +112,13 @@
   }
   .field-error.show{ display:block; }
 
+  .hint{
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size:.78rem;
+    color:#8c8373;
+    margin-top:.35rem;
+  }
+
   .row-between{
     display:flex;
     align-items:center;
@@ -121,6 +129,7 @@
   .row-between a{
     color: var(--accent);
     text-decoration:none;
+    cursor: pointer;
   }
   .row-between a:hover{ text-decoration:underline; }
 
@@ -163,6 +172,7 @@
   .footnote a{
     color: var(--accent);
     text-decoration:none;
+    cursor: pointer;
   }
   .footnote a:hover{ text-decoration:underline; }
 
@@ -173,44 +183,101 @@
 </head>
 <body>
   <div class="panel">
-    <h1>Welcome back</h1>
-    <p class="sub">Sign in to continue to your account.</p>
 
-    <form id="loginForm" novalidate>
-      <div class="field">
-        <label for="email">Email</label>
-        <input
-          id="email" name="email" type="email"
-          autocomplete="email" placeholder=" "
-          required
-        />
-        <p class="field-error" id="emailError">Enter a valid email address.</p>
-      </div>
+    <!-- ===== LOG IN VIEW ===== -->
+    <div id="loginView">
+      <h1>Welcome back</h1>
+      <p class="sub">Sign in to continue to your account.</p>
 
-      <div class="field">
-        <label for="password">Password</label>
-        <div class="password-wrap">
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="loginEmail">Email</label>
           <input
-            id="password" name="password" type="password"
-            autocomplete="current-password" placeholder=" "
-            required minlength="6"
+            id="loginEmail" name="email" type="email"
+            autocomplete="email" placeholder=" "
+            required
           />
-          <button type="button" id="togglePassword" aria-pressed="false" aria-controls="password">Show</button>
+          <p class="field-error" id="loginEmailError">Enter a valid email address.</p>
         </div>
-        <p class="field-error" id="passwordError">Password must be at least 6 characters.</p>
-      </div>
 
-      <div class="row-between">
-        <a href="/reset-password" id="forgotLink">Forgot password?</a>
-      </div>
+        <div class="field">
+          <label for="loginPassword">Password</label>
+          <div class="password-wrap">
+            <input
+              id="loginPassword" name="password" type="password"
+              autocomplete="current-password" placeholder=" "
+              required minlength="6"
+            />
+            <button type="button" class="toggle-visibility" data-toggle-for="loginPassword" aria-pressed="false" aria-controls="loginPassword">Show</button>
+          </div>
+          <p class="field-error" id="loginPasswordError">Password must be at least 6 characters.</p>
+        </div>
 
-      <button type="submit" id="submitBtn">Log In</button>
-      <div id="message" role="status" aria-live="polite"></div>
-    </form>
+        <div class="row-between">
+          <a href="/reset-password" id="forgotLink">Forgot password?</a>
+        </div>
 
-    <p class="footnote" id="signupWrapper">
-      Don't have an account? <a href="/signup" id="signupLink">Create one</a>
-    </p>
+        <button type="submit" id="loginSubmitBtn">Log In</button>
+        <div id="loginMessage" role="status" aria-live="polite"></div>
+      </form>
+
+      <p class="footnote">
+        Don't have an account? <a id="showSignup">Create one</a>
+      </p>
+    </div>
+
+    <!-- ===== CREATE ACCOUNT VIEW ===== -->
+    <div id="signupView" hidden>
+      <h1>Create your account</h1>
+      <p class="sub">Set up an account to get started.</p>
+
+      <form id="signupForm" novalidate>
+        <div class="field">
+          <label for="signupEmail">Email</label>
+          <input
+            id="signupEmail" name="email" type="email"
+            autocomplete="email" placeholder=" "
+            required
+          />
+          <p class="field-error" id="signupEmailError">Enter a valid email address.</p>
+        </div>
+
+        <div class="field">
+          <label for="signupPassword">Password</label>
+          <div class="password-wrap">
+            <input
+              id="signupPassword" name="password" type="password"
+              autocomplete="new-password" placeholder=" "
+              required minlength="6"
+            />
+            <button type="button" class="toggle-visibility" data-toggle-for="signupPassword" aria-pressed="false" aria-controls="signupPassword">Show</button>
+          </div>
+          <p class="field-error" id="signupPasswordError">Password must be at least 6 characters.</p>
+        </div>
+
+        <div class="field">
+          <label for="signupConfirmPassword">Confirm password</label>
+          <div class="password-wrap">
+            <input
+              id="signupConfirmPassword" name="confirmPassword" type="password"
+              autocomplete="new-password" placeholder=" "
+              required minlength="6"
+            />
+            <button type="button" class="toggle-visibility" data-toggle-for="signupConfirmPassword" aria-pressed="false" aria-controls="signupConfirmPassword">Show</button>
+          </div>
+          <p class="field-error" id="signupConfirmPasswordError">Passwords do not match.</p>
+        </div>
+
+        <button type="submit" id="signupSubmitBtn">Create account</button>
+        <div id="signupMessage" role="status" aria-live="polite"></div>
+        <p class="hint" id="confirmHint" style="display:none;">Check your email to confirm your account before signing in.</p>
+      </form>
+
+      <p class="footnote">
+        Already have an account? <a id="showLogin">Log in</a>
+      </p>
+    </div>
+
   </div>
 
   <!-- Supabase client -->
@@ -222,73 +289,171 @@
       const SUPABASE_KEY = 'sb_publishable_Wtl4SqxUwrhS62k1LaVzDA_h2KM8WvU';
       const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      // ---- Form elements ----
-      const form = document.getElementById('loginForm');
-      const email = document.getElementById('email');
-      const password = document.getElementById('password');
-      const emailError = document.getElementById('emailError');
-      const passwordError = document.getElementById('passwordError');
-      const message = document.getElementById('message');
-      const submitBtn = document.getElementById('submitBtn');
-      const togglePassword = document.getElementById('togglePassword');
+      // ---- View switching ----
+      const loginView = document.getElementById('loginView');
+      const signupView = document.getElementById('signupView');
+      const showSignup = document.getElementById('showSignup');
+      const showLogin = document.getElementById('showLogin');
 
-      const errorEls = { email: emailError, password: passwordError };
+      function switchTo(view) {
+        const showingLogin = view === 'login';
+        loginView.hidden = !showingLogin;
+        signupView.hidden = showingLogin;
+        setMessage(loginMessage, '', '');
+        setMessage(signupMessage, '', '');
+        (showingLogin ? loginEmail : signupEmail).focus();
+      }
+      showSignup.addEventListener('click', () => switchTo('signup'));
+      showLogin.addEventListener('click', () => switchTo('login'));
 
-      function setMessage(text, type) {
-        message.textContent = text;
-        message.className = type || '';
+      // ---- Shared helpers ----
+      function setMessage(el, text, type) {
+        el.textContent = text;
+        el.className = type || '';
       }
 
-      function setFieldError(input, hasError) {
+      function setFieldError(input, errorEl, hasError) {
         input.setAttribute('aria-invalid', String(hasError));
-        errorEls[input.name].classList.toggle('show', hasError);
+        errorEl.classList.toggle('show', hasError);
       }
 
-      [email, password].forEach((input) => {
-        input.addEventListener('input', () => {
-          setFieldError(input, false);
-          setMessage('', '');
+      document.querySelectorAll('.toggle-visibility').forEach((button) => {
+        button.addEventListener('click', () => {
+          const input = document.getElementById(button.dataset.toggleFor);
+          const isText = input.type === 'text';
+          input.type = isText ? 'password' : 'text';
+          button.textContent = isText ? 'Show' : 'Hide';
+          button.setAttribute('aria-pressed', String(!isText));
         });
       });
 
-      togglePassword.addEventListener('click', () => {
-        const isText = password.type === 'text';
-        password.type = isText ? 'password' : 'text';
-        togglePassword.textContent = isText ? 'Show' : 'Hide';
-        togglePassword.setAttribute('aria-pressed', String(!isText));
+      // ---- LOG IN ----
+      const loginForm = document.getElementById('loginForm');
+      const loginEmail = document.getElementById('loginEmail');
+      const loginPassword = document.getElementById('loginPassword');
+      const loginEmailError = document.getElementById('loginEmailError');
+      const loginPasswordError = document.getElementById('loginPasswordError');
+      const loginMessage = document.getElementById('loginMessage');
+      const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+
+      [loginEmail, loginPassword].forEach((input) => {
+        input.addEventListener('input', () => {
+          setFieldError(input, input === loginEmail ? loginEmailError : loginPasswordError, false);
+          setMessage(loginMessage, '', '');
+        });
       });
 
-      form.addEventListener('submit', async (ev) => {
+      loginForm.addEventListener('submit', async (ev) => {
         ev.preventDefault();
-        setMessage('', '');
+        setMessage(loginMessage, '', '');
 
-        if (!form.checkValidity()) {
-          [email, password].forEach((input) => setFieldError(input, !input.checkValidity()));
-          form.querySelector(':invalid').focus();
+        if (!loginForm.checkValidity()) {
+          setFieldError(loginEmail, loginEmailError, !loginEmail.checkValidity());
+          setFieldError(loginPassword, loginPasswordError, !loginPassword.checkValidity());
+          loginForm.querySelector(':invalid').focus();
           return;
         }
 
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Signing in…';
+        loginSubmitBtn.disabled = true;
+        loginSubmitBtn.textContent = 'Signing in…';
 
         const { data, error } = await supabase.auth.signInWithPassword({
-          email: email.value.trim(),
-          password: password.value,
+          email: loginEmail.value.trim(),
+          password: loginPassword.value,
         });
 
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Log In';
+        loginSubmitBtn.disabled = false;
+        loginSubmitBtn.textContent = 'Log In';
 
         if (error) {
-          setFieldError(email, true);
-          setFieldError(password, true);
-          setMessage(error.message, 'error');
+          setFieldError(loginEmail, loginEmailError, true);
+          setFieldError(loginPassword, loginPasswordError, true);
+          setMessage(loginMessage, error.message, 'error');
           return;
         }
 
-        setMessage('Signed in successfully.', 'success');
+        setMessage(loginMessage, 'Signed in successfully.', 'success');
         // data.session and data.user are now available.
         // e.g. redirect: window.location.href = '/dashboard';
+      });
+
+      // ---- CREATE ACCOUNT ----
+      const signupForm = document.getElementById('signupForm');
+      const signupEmail = document.getElementById('signupEmail');
+      const signupPassword = document.getElementById('signupPassword');
+      const signupConfirmPassword = document.getElementById('signupConfirmPassword');
+      const signupEmailError = document.getElementById('signupEmailError');
+      const signupPasswordError = document.getElementById('signupPasswordError');
+      const signupConfirmPasswordError = document.getElementById('signupConfirmPasswordError');
+      const signupMessage = document.getElementById('signupMessage');
+      const signupSubmitBtn = document.getElementById('signupSubmitBtn');
+      const confirmHint = document.getElementById('confirmHint');
+
+      const signupErrorEls = {
+        email: signupEmailError,
+        password: signupPasswordError,
+        confirmPassword: signupConfirmPasswordError,
+      };
+
+      [signupEmail, signupPassword, signupConfirmPassword].forEach((input) => {
+        input.addEventListener('input', () => {
+          setFieldError(input, signupErrorEls[input.name], false);
+          setMessage(signupMessage, '', '');
+        });
+      });
+
+      signupForm.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        setMessage(signupMessage, '', '');
+        confirmHint.style.display = 'none';
+
+        let valid = signupForm.checkValidity();
+        [signupEmail, signupPassword, signupConfirmPassword].forEach((input) =>
+          setFieldError(input, signupErrorEls[input.name], false)
+        );
+
+        if (!valid) {
+          [signupEmail, signupPassword, signupConfirmPassword].forEach((input) =>
+            setFieldError(input, signupErrorEls[input.name], !input.checkValidity())
+          );
+        }
+
+        if (signupPassword.value !== signupConfirmPassword.value) {
+          setFieldError(signupConfirmPassword, signupConfirmPasswordError, true);
+          valid = false;
+        }
+
+        if (!valid) {
+          signupForm.querySelector('[aria-invalid="true"]').focus();
+          return;
+        }
+
+        signupSubmitBtn.disabled = true;
+        signupSubmitBtn.textContent = 'Creating account…';
+
+        const { data, error } = await supabase.auth.signUp({
+          email: signupEmail.value.trim(),
+          password: signupPassword.value,
+        });
+
+        signupSubmitBtn.disabled = false;
+        signupSubmitBtn.textContent = 'Create account';
+
+        if (error) {
+          setFieldError(signupEmail, signupEmailError, true);
+          setMessage(signupMessage, error.message, 'error');
+          return;
+        }
+
+        // If email confirmation is required, Supabase returns a user with no active session.
+        if (data.user && !data.session) {
+          setMessage(signupMessage, 'Account created.', 'success');
+          confirmHint.style.display = 'block';
+        } else {
+          setMessage(signupMessage, 'Account created and signed in.', 'success');
+          // data.session and data.user are now available.
+          // e.g. redirect: window.location.href = '/dashboard';
+        }
       });
     })();
   </script>
